@@ -113,11 +113,21 @@ export type ManifestWorkflowSchema = {
   steps: ManifestWorkflowStepSchema[];
 };
 
+export type ManifestBotUser = {
+  "display_name": string;
+  "always_online"?: boolean;
+};
 export type ManifestCustomTypeSchema = ParameterDefinition;
 
 export type ManifestMetadata = {
   "major_version"?: number;
   "minor_version"?: number;
+};
+
+export type ManifestAppHome = {
+  "home_tab_enabled"?: boolean;
+  "messages_tab_enabled"?: boolean;
+  "messages_tab_read_only_enabled"?: boolean;
 };
 
 export type ManifestSchema = {
@@ -129,15 +139,15 @@ export type ManifestSchema = {
     "short_description": string;
   };
   icon: string;
+  //TODO: user tokens and scopes?
   "oauth_config": {
     scopes: {
       bot: string[];
     };
   };
   features: {
-    "bot_user": {
-      "display_name": string;
-    };
+    "bot_user": ManifestBotUser;
+    "app_home": ManifestAppHome;
   };
   functions?: {
     [key: string]: ManifestFunctionSchema;
