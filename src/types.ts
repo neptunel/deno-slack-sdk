@@ -130,6 +130,53 @@ export type ManifestAppHome = {
   "messages_tab_read_only_enabled"?: boolean;
 };
 
+export type ManifestShortcut = {
+  name: string;
+  type: "message" | "global";
+  "callback_id": string;
+  description: string;
+};
+
+export type ManifestShortcuts = [
+  ManifestShortcut,
+  ...ManifestShortcut[],
+];
+
+export type ManifestSlashCommand = {
+  command: string;
+  url?: string;
+  description: string;
+  "usage_hint"?: string;
+  "should_escape"?: boolean;
+};
+export type ManifestSlashCommands = [
+  ManifestSlashCommand,
+  ...ManifestSlashCommand[],
+];
+export type ManifestUnfurlDomains = [string, ...string[]];
+
+export type ManifestWorkflowStep = {
+  "name": string;
+  "callback_id": string;
+};
+export type ManifestWorkflowSteps = [
+  ManifestWorkflowStep,
+  ...ManifestWorkflowStep[],
+];
+
+/*const secobj: ManifestShortcuts = [{
+    "name": "sena",
+    "callback_id" : "shdsjhd",
+    "type" : "message",
+    "description": "kdhskhs"
+  }];
+const newobj: ManifestShortcuts = [{
+  "name": "sena",
+  "callback_id" : "shdsjhd",
+  "type" : "message",
+  "description": "kdhskhs"
+},
+... secobj ];*/
 export type ManifestSchema = {
   "_metadata"?: ManifestMetadata;
   "display_information": {
@@ -143,11 +190,21 @@ export type ManifestSchema = {
   "oauth_config": {
     scopes: {
       bot: string[];
+      //TBD:user scopes?
+      user: string[];
     };
+    "redirect_urls"?: string[];
+    "token_management_enabled"?: boolean;
   };
   features: {
-    "bot_user": ManifestBotUser;
-    "app_home": ManifestAppHome;
+    "app_home"?: ManifestAppHome;
+    "bot_user"?: ManifestBotUser;
+    //functions?
+    //schema? //note that down in the final pr
+    "shortcuts"?: ManifestShortcuts;
+    "slash_commands"?: ManifestSlashCommands;
+    "unfurl_domains"?: ManifestUnfurlDomains;
+    "workflow_steps"?: ManifestWorkflowSteps;
   };
   functions?: {
     [key: string]: ManifestFunctionSchema;
@@ -162,4 +219,5 @@ export type ManifestSchema = {
   datastores?: {
     [key: string]: ManifestDatastoreSchema;
   };
+  //TBD: forms?
 };
