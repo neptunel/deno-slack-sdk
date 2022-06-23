@@ -16,7 +16,12 @@ export type {
   SlackFunctionHandler,
 } from "./functions/types.ts";
 
-export type SlackManifestType = {
+export type SlackManifestType =
+  | SlackManifestPlatform2_0
+  | SlackManifestPlatform1_0;
+
+export interface SlackManifestPlatform2_0 {
+  appHostingProvider: "slack";
   name: string;
   backgroundColor?: string;
   description: string;
@@ -29,7 +34,36 @@ export type SlackManifestType = {
   outgoingDomains?: Array<string>;
   types?: ICustomType[];
   datastores?: ManifestDatastore[];
-};
+}
+
+export interface SlackManifestPlatform1_0 {
+  appHostingProvider: "other";
+  name: string;
+  backgroundColor?: string;
+  description: string;
+  displayName?: string;
+  icon: string;
+  longDescription?: string;
+  botScopes: Array<string>;
+  functions?: ManifestFunction[];
+  workflows?: ManifestWorkflow[];
+  outgoingDomains?: Array<string>;
+  types?: ICustomType[];
+  datastores?: ManifestDatastore[];
+  // Properties below are features supported in Platform1.0
+  userScopes?: Array<string>;
+  redirectUrls?: Array<string>;
+  tokenManagementEnabled?: boolean;
+  features?: ManifestFeaturesPlatform1_0;
+}
+
+// SlackManifestFromType is a type function which takes a string value of T.
+// It looks at the SlackManifestType which is a discriminated union.
+// The function returns the type whose discriminant property (appHostingProvider) matches T
+export type SlackManifestFromType<T extends string> = Extract<
+  SlackManifestType,
+  { appHostingProvider: T }
+>;
 
 export type ManifestDatastore = ISlackDatastore;
 
@@ -78,9 +112,10 @@ export type ManifestFunctionParameters = {
 };
 
 export type ManifestFunctionSchema = {
+  //title and description is optional ->source file does not exists
   title?: string;
   description?: string;
-  source_file: string;
+  "source_file": string;
   "input_parameters": ManifestFunctionParameters;
   "output_parameters": ManifestFunctionParameters;
 };
@@ -149,34 +184,84 @@ export type ManifestSlashCommand = {
   "usage_hint"?: string;
   "should_escape"?: boolean;
 };
+
 export type ManifestSlashCommands = [
   ManifestSlashCommand,
   ...ManifestSlashCommand[],
 ];
+
 export type ManifestUnfurlDomains = [string, ...string[]];
 
 export type ManifestWorkflowStep = {
-  "name": string;
+  name: string;
   "callback_id": string;
 };
+
 export type ManifestWorkflowSteps = [
   ManifestWorkflowStep,
   ...ManifestWorkflowStep[],
 ];
 
-/*const secobj: ManifestShortcuts = [{
-    "name": "sena",
-    "callback_id" : "shdsjhd",
-    "type" : "message",
-    "description": "kdhskhs"
-  }];
-const newobj: ManifestShortcuts = [{
-  "name": "sena",
-  "callback_id" : "shdsjhd",
-  "type" : "message",
-  "description": "kdhskhs"
-},
-... secobj ];*/
+export type ManifestAppDirectory = {
+  "app_directory_categories"?: string[];
+  "use_direct_install"?: boolean;
+  "direct_install_url"?: string;
+  "installation_landing_page": string;
+  "privacy_policy_url": string;
+  "support_url": string;
+  "support_email": string;
+  "supported_languages": [string, ...string[]];
+  pricing: string;
+};
+
+export type ManifestInteractivity = {
+  "is_enabled": boolean;
+  "request_url"?: string;
+  "message_menu_options_url"?: string;
+};
+
+export type ManifestEventSubscriptions = {
+  "request_url"?: string;
+  "user_events"?: string[];
+  "bot_events"?: string[];
+  "metadata_subscriptions"?: [
+    {
+      "app_id": string;
+      "event_type": string;
+    },
+    ...{
+      "app_id": string;
+      "event_type": string;
+    }[],
+  ];
+};
+
+export type ManifestSiwsLinks = {
+  "initiate_uri"?: string;
+};
+
+export type ManifestSettings = {
+  "allowed_ip_address_ranges"?: [string, ...string[]];
+  "event_subscriptions"?: ManifestEventSubscriptions;
+  "incoming_webhooks"?: boolean;
+  interactivity?: ManifestInteractivity;
+  "org_deploy_enabled"?: boolean;
+  "socket_mode_enabled"?: boolean;
+  "is_hosted"?: boolean;
+  "token_rotation_enabled"?: boolean;
+  "siws_links"?: ManifestSiwsLinks;
+  "function_runtime"?: string;
+};
+
+export interface ManifestFeaturesPlatform1_0 {
+  appHome?: ManifestAppHome;
+  botUser?: ManifestBotUser;
+  shortcuts?: ManifestShortcuts;
+  slashCommands?: ManifestSlashCommands;
+  unfurlDomains?: ManifestUnfurlDomains;
+  workflowSteps?: ManifestWorkflowSteps;
+}
+
 export type ManifestSchema = {
   "_metadata"?: ManifestMetadata;
   "display_information": {
@@ -186,12 +271,10 @@ export type ManifestSchema = {
     "short_description": string;
   };
   icon: string;
-  //TODO: user tokens and scopes?
   "oauth_config": {
     scopes: {
-      bot: string[];
-      //TBD:user scopes?
-      user: string[];
+      bot?: string[];
+      user?: string[];
     };
     "redirect_urls"?: string[];
     "token_management_enabled"?: boolean;
