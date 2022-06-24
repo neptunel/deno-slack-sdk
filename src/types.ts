@@ -348,14 +348,10 @@ export type ManifestSchema = {
   };
 };
 
-// Draft PR Notes
+// TODO: Remove these draft PR Notes
 // ManifestSchema changes overview
 // Omitted functions and schema props from the ManifestSchema.features because they are redundant with top level schema properties
 // Omitted ManifestSchema.forms because this appears to be a incoming Hermes feature under development
 // Omitted ManifestSchema.compliance. This is GovSlack only property.
 // Omitted ManifestSchema.manifest_metadata property
 // Omitted hermes_app_type because this is no longer used (function_runtime is used instead)
-
-// Todo
-// Make sure that the SlackManifestTypes types are all properly in camelCase, may need
-// to import a deno module to help
