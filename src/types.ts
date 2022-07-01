@@ -6,7 +6,7 @@ import type {
   ParameterSetDefinition,
 } from "./parameters/mod.ts";
 import type { ICustomType } from "./types/types.ts";
-import type { CamelCasedPropertiesDeep } from "./types_utils/camel-case.ts";
+// import type { CamelCasedPropertiesDeep } from "./types_utils/camel-case.ts";
 
 export type {
   BaseSlackFunctionHandler,
@@ -15,24 +15,23 @@ export type {
 } from "./functions/types.ts";
 
 /** SlackManifestType describes the shape of the manifest definition provided by
- * The user. An app manifest of type ManifestSchema is generated based on what is
+ * the user. An app manifest of type ManifestSchema is generated based on what is
  * defined in it. It does not map 1:1 to the ManifestSchema as it contains affordances
  * for better user experience.
  *
  * This type is a discriminated union where the discriminant property slackHosted
  * property which maps to function_runtime in the underlying ManifestSchema
  */
-export type SlackManifestType = CamelCasedPropertiesDeep<
-  | ISlackManifestPlatform2_0
-  | ISlackManifestPlatform1_0
->;
+export type SlackManifestType =
+  | ISlackManifestHosted
+  | ISlackManifestRemote;
 
-/** ISlackManifestPlatform2_0 contains the features currently available to
- * ManifestSchema#function_runtime = hosted apps. Here, we surface that value
+/** ISlackManifestHosted contains the features currently available to
+ * ManifestSchema#function_runtime = slack hosted apps. Here, we surface that value
  * to the developer as the slackHosted top-level property.
  */
-export interface ISlackManifestPlatform2_0 {
-  slackHosted: true; // maps to function_runtime = "hosted" in ManifestSchema
+export interface ISlackManifestHosted {
+  slackHosted?: true; // maps to function_runtime = "slack" in ManifestSchema, optional since the apps are slack hosted by default
   name: string;
   backgroundColor?: string;
   description: string;
@@ -47,13 +46,13 @@ export interface ISlackManifestPlatform2_0 {
   datastores?: ManifestDatastore[];
 }
 
-/** ISlackManifestPlatform1_0 contains the features currently available to
+/** ISlackManifestRemote contains the features currently available to
  * ManifestSchema.settings.function_runtime = remote apps. Here we surface that value
  * to the developer as the slackHosted property.
  *
- * A subset of properties overlap with ISlackManifestPlatform1_0
+ * A subset of properties overlap with ISlackManifestRemote
  */
-export interface ISlackManifestPlatform1_0 {
+export interface ISlackManifestRemote {
   slackHosted: false; // maps to function_runtime = "remote" in ManifestSchema
   name: string;
   backgroundColor?: string;
@@ -64,11 +63,13 @@ export interface ISlackManifestPlatform1_0 {
   botScopes: Array<string>;
   functions?: ManifestFunction[];
   workflows?: ManifestWorkflow[];
-  outgoingDomains?: Array<string>;
+
+  // Outgoing domains are not enforced for remote functions
+  // outgoingDomains?: Array<string>;
   types?: ICustomType[];
   datastores?: ManifestDatastore[];
 
-  // Features supported in Platform1_0 apps only (remote / non-run on Slack)
+  // Features supported in Platform1_0 (Remote) apps only (remote / non-run on Slack)
   settings?: Omit<
     ManifestSettingsSchema,
     | "function_runtime"
@@ -76,8 +77,8 @@ export interface ISlackManifestPlatform1_0 {
     | "socket_mode_enabled"
     | "token_rotation_enabled"
   >; // lifting omitted properties to top level
-  eventSubscriptions: ManifestEventSubscriptionsSchema;
-  socketModeEnabled: boolean;
+  eventSubscriptions?: ManifestEventSubscriptionsSchema;
+  socketModeEnabled?: boolean;
   tokenRotationEnabled?: boolean;
 
   appDirectory?: ManifestAppDirectorySchema;
@@ -87,12 +88,12 @@ export interface ISlackManifestPlatform1_0 {
   redirectUrls?: Array<string>;
   tokenManagementEnabled?: boolean;
 
-  features?: ISlackManifestPlatform1_0FeaturesSchema;
+  features?: ISlackManifestRemoteFeaturesSchema;
 }
 
-export interface ISlackManifestPlatform1_0FeaturesSchema {
+export interface ISlackManifestRemoteFeaturesSchema {
   appHome?: ManifestAppHomeSchema;
-  botUser?: ManifestBotUserSchema;
+  botUser?: Omit<ManifestBotUserSchema, "display_name">;
   shortcuts?: ManifestShortcutsSchema;
   slashCommands?: ManifestSlashCommandsSchema;
   unfurlDomains?: ManifestUnfurlDomainsSchema;
@@ -191,14 +192,15 @@ export type ManifestWorkflowSchema = {
   steps: ManifestWorkflowStepSchema[];
 };
 
-export type ManifestBotUserSchema = {
-  "display_name": string;
-  "always_online"?: boolean;
-};
-
 export type ManifestMetadataSchema = {
   "major_version"?: number;
   "minor_version"?: number;
+};
+
+// Features
+export type ManifestBotUserSchema = {
+  "display_name": string;
+  "always_online"?: boolean;
 };
 
 export type ManifestAppHomeSchema = {
@@ -244,6 +246,16 @@ export type ManifestWorkflowStepsSchema = [
   ...ManifestWorkflowStep[],
 ];
 
+export interface ManifestFeaturesRemote {
+  appHome?: ManifestAppHomeSchema;
+  botUser?: ManifestBotUserSchema;
+  shortcuts?: ManifestShortcutsSchema;
+  slashCommands?: ManifestSlashCommandsSchema;
+  unfurlDomains?: ManifestUnfurlDomainsSchema;
+  workflowSteps?: ManifestWorkflowStepsSchema;
+}
+
+// App Directory
 export type ManifestAppDirectorySchema = {
   "app_directory_categories"?: string[];
   "use_direct_install"?: boolean;
@@ -256,6 +268,7 @@ export type ManifestAppDirectorySchema = {
   pricing: string;
 };
 
+// Settings
 export type ManifestInteractivitySchema = {
   "is_enabled": boolean;
   "request_url"?: string;
@@ -294,21 +307,14 @@ export type ManifestSettingsSchema = {
   "function_runtime"?: string;
 };
 
-export interface ManifestFeaturesPlatform1_0 {
-  appHome?: ManifestAppHomeSchema;
-  botUser?: ManifestBotUserSchema;
-  shortcuts?: ManifestShortcutsSchema;
-  slashCommands?: ManifestSlashCommandsSchema;
-  unfurlDomains?: ManifestUnfurlDomainsSchema;
-  workflowSteps?: ManifestWorkflowStepsSchema;
-}
-
+// Display Information
 export type ManifestDisplayInformationSchema = {
   "background_color"?: string;
   name: string;
   "long_description"?: string;
-  "short_description": string;
+  "description": string;
 };
+//Oauth Config
 export type ManifestOauthConfigSchema = {
   scopes: {
     bot?: string[];
@@ -320,8 +326,9 @@ export type ManifestOauthConfigSchema = {
 
 export type ManifestSchema = {
   "_metadata"?: ManifestMetadataSchema;
+  "function_runtime": "slack" | "remote";
   settings: ManifestSettingsSchema;
-  "app_directory": ManifestAppDirectorySchema;
+  "app_directory"?: ManifestAppDirectorySchema;
   "display_information": ManifestDisplayInformationSchema;
   icon: string;
   "oauth_config": ManifestOauthConfigSchema;
@@ -347,11 +354,3 @@ export type ManifestSchema = {
     [key: string]: ManifestDatastoreSchema;
   };
 };
-
-// TODO: Remove these draft PR Notes
-// ManifestSchema changes overview
-// Omitted functions and schema props from the ManifestSchema.features because they are redundant with top level schema properties
-// Omitted ManifestSchema.forms because this appears to be a incoming Hermes feature under development
-// Omitted ManifestSchema.compliance. This is GovSlack only property.
-// Omitted ManifestSchema.manifest_metadata property
-// Omitted hermes_app_type because this is no longer used (function_runtime is used instead)
