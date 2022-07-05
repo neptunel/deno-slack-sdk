@@ -27,6 +27,7 @@ type CamelCaseStringArray<Parts extends readonly string[]> = Parts extends
 >
   : never;
 
+// deno-lint-ignore no-explicit-any
 type InnerCamelCaseStringArray<Parts extends readonly any[], PreviousPart> =
   Parts extends [`${infer FirstPart}`, ...infer RemainingParts]
     ? FirstPart extends undefined ? ""
@@ -39,6 +40,7 @@ type InnerCamelCaseStringArray<Parts extends readonly any[], PreviousPart> =
     >}`
     : "";
 
+// deno-lint-ignore ban-types
 export type CamelCasedPropertiesDeep<Value> = Value extends Function ? Value
   : Value extends Array<infer U> ? Array<CamelCasedPropertiesDeep<U>>
   : Value extends Set<infer U> ? Set<CamelCasedPropertiesDeep<U>>

@@ -340,7 +340,7 @@ Deno.test("Manifest() property mappings for remote manifest", () => {
       }],
     },
   };
-  let manifest = Manifest(definition);
+  const manifest = Manifest(definition);
 
   assertEquals(manifest.display_information, {
     name: definition.name,
@@ -450,7 +450,7 @@ Deno.test("Manifest() property mappings fo expanded types in the remote manifest
     tokenManagementEnabled: false,
   };
 
-  let manifest = Manifest(definition);
+  const manifest = Manifest(definition);
 
   assertEquals(manifest.display_information, {
     name: definition.name,
