@@ -16,11 +16,12 @@ type Split<
   : S extends Delimiter ? []
   : [S];
 
+//deno-fmt-ignore
 type CamelCase<K> = K extends string ? CamelCaseStringArray<
   Split<K extends Uppercase<K> ? Lowercase<K> : K, "-" | "_" | " ">
 >
   : K;
-
+//deno-fmt-ignore
 type CamelCaseStringArray<Parts extends readonly string[]> = Parts extends
   [`${infer FirstPart}`, ...infer RemainingParts] ? Uncapitalize<
   `${FirstPart}${InnerCamelCaseStringArray<RemainingParts, FirstPart>}`
