@@ -23,8 +23,6 @@ export class SlackManifest {
         // todo: is there a more idiomatic way of defining this? constant file?
         "major_version": 2,
       },
-
-      "function_runtime": this.getFunctionRuntime(),
       "display_information": {
         background_color: def.backgroundColor,
         name: def.name,
@@ -43,10 +41,10 @@ export class SlackManifest {
             def.name,
         },
       },
-      settings: {},
+      settings: { "function_runtime": this.getFunctionRuntime() },
     } as ManifestSchema;
 
-    if (def.slackHosted == false) {
+    if (def.slackHosted === false && def.slackHosted !== undefined) {
       //Settings
       if (def.settings === undefined) {
         manifest.settings = {};
@@ -54,6 +52,7 @@ export class SlackManifest {
       if (def.settings !== undefined) {
         manifest.settings = def.settings;
       }
+      manifest.settings.function_runtime = this.getFunctionRuntime();
       if (def.eventSubscriptions !== undefined) {
         manifest.settings.event_subscriptions = def.eventSubscriptions;
       }

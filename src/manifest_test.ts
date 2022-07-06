@@ -30,7 +30,7 @@ Deno.test("Manifest() property mappings", () => {
     manifest.features.bot_user?.display_name,
     definition.displayName,
   );
-  assertEquals(manifest.function_runtime, "slack");
+  assertEquals(manifest.settings.function_runtime, "slack");
 
   // If display_name is not defined on definition, should fall back to name
   delete definition.displayName;
@@ -361,7 +361,7 @@ Deno.test("Manifest() property mappings for remote manifest", () => {
     manifest.features.shortcuts,
     definition.features?.shortcuts,
   );
-  assertEquals(manifest.function_runtime, "remote");
+  assertEquals(manifest.settings.function_runtime, "remote");
 });
 
 Deno.test("Manifest() property mappings fo expanded types in the remote manifest", () => {
@@ -525,5 +525,5 @@ Deno.test("Manifest() property mappings fo expanded types in the remote manifest
     definition.tokenManagementEnabled,
   );
 
-  assertStrictEquals(manifest.function_runtime, "remote");
+  assertStrictEquals(manifest.settings.function_runtime, "remote");
 });

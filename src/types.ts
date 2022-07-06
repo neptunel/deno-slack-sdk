@@ -326,7 +326,6 @@ export type ManifestOauthConfigSchema = {
 
 export type ManifestSchema = {
   "_metadata"?: ManifestMetadataSchema;
-  "function_runtime": "slack" | "remote";
   settings: ManifestSettingsSchema;
   "app_directory"?: ManifestAppDirectorySchema;
   "display_information": ManifestDisplayInformationSchema;
