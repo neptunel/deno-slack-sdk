@@ -4,10 +4,8 @@
 name: Build & Deploy to NPM
 
 on:
-  push:    
-    tags:        
-      - '*'
-    branches: [ main ]
+  release:
+    types: [published]
 
 jobs:
 
@@ -21,7 +19,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: latest
           registry-url: https://registry.npmjs.org/
           
       - name: Setup Deno
@@ -30,7 +28,7 @@ jobs:
           deno-version: v1.x
           
       - name: Run build_npm.ts
-        run: deno run -A build_npm.ts 0.1.0
+        run: deno run -A build_npm.ts ${GITHUB_REF}
          
       - name: Publish to NPM    
         run: cd npm && npm publish

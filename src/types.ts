@@ -20,7 +20,7 @@ export type {
  * for better user experience.
  *
  * This type is a discriminated union where the discriminant property slackHosted
- * property which maps to function_runtime in the underlying ManifestSchema
+ * maps to function_runtime in the underlying ManifestSchema
  */
 export type SlackManifestType =
   | ISlackManifestHosted
@@ -45,7 +45,7 @@ export interface ISlackManifestHosted {
   outgoingDomains?: Array<string>;
   types?: ICustomType[];
   datastores?: ManifestDatastore[];
-  features?: SlackManifestFeatures;
+  features?: ISlackManifestHostedFeaturesSchema;
 }
 
 /** ISlackManifestRemote contains the features currently available to
@@ -71,7 +71,7 @@ export interface ISlackManifestRemote {
   types?: ICustomType[];
   datastores?: ManifestDatastore[];
 
-  // Features supported in Platform1_0 (Remote) apps only (remote / non-run on Slack)
+  // Features supported in remote / non-run on Slack appss
   settings?: Omit<
     ManifestSettingsSchema,
     | "function_runtime"
@@ -210,9 +210,9 @@ export type ManifestMetadataSchema = {
 
 // Features
 
-// SlackManifestFeatures for Slack Hosted Apps(ISlackManifestHosted)
+// ISlackManifestHostedFeaturesSchema for Slack Hosted Apps
 
-export interface SlackManifestFeatures {
+export interface ISlackManifestHostedFeaturesSchema {
   appHome?: SlackManifestFeaturesAppHome;
 }
 export type SlackManifestFeaturesAppHome = ManifestAppHomeSchema;

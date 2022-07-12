@@ -14,7 +14,7 @@ await build({
     // package.json properties
     name: "@slack/deno-slack-sdk",
     version: Deno.args[0],
-    description: "Test deno sdk dpendencies",
+    description: "Deno Slack SDK published to NPM to be consumed in Bolt.js apps",
     license: "MIT",
     repository: {
       type: "git",
