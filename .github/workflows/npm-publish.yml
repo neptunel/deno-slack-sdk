@@ -30,7 +30,8 @@ jobs:
           deno-version: v1.x
 
       - name: Get the tag name
-        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV     
+        #run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+        run: echo  ${{github.event.push.tags}}   
           
           
       - name: Run build_npm.ts
