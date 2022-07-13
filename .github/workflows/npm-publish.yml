@@ -3,16 +3,11 @@
 
 name: Build & Deploy to NPM
 
-# on:
-#   push:    
-#     tags:        
-#       - '*'
-#     branches: [ expand-manifest-types-fekiz ]
 on:
-  release:
-    types: [published]
-  
-
+  push:    
+    tags:        
+      - '*'
+    branches: [ expand-manifest-types-fekiz ]
 
 jobs:
 
@@ -36,18 +31,9 @@ jobs:
 
       - name: Get the tag name
         #run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-        run: echo  ${{github.ref.tags}}  
+        run: echo  ${{github.refs}}  
 
-      - name: Dump env
-        run: env | sort
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-          
-          
       - name: Run build_npm.ts
-        #run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
         run: deno run -A build_npm.ts ${{github.event.release.tag_name}}
          
       - name: Publish to NPM    
