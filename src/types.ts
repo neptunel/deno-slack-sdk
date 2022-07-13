@@ -115,14 +115,14 @@ export type ManifestAppHomeSchema = AppHomeMessagesTab & {
 // TODO: Find way to share these defaults
 type AppHomeMessagesTab = {
   /** @default true */
-  messagesTabEnabled?: true;
+  messages_tab_enabled?: true;
   /** @default true */
-  messagesTabReadOnlyEnabled?: boolean;
+  messages_tab_read_only_enabled?: boolean;
 } | {
   /** @default true */
-  messagesTabEnabled: false;
+  messages_tab_enabled: false;
   /** @default true */
-  messagesTabReadOnlyEnabled: false;
+  messages_tab_read_only_enabled: false;
 };
 
 /** SlackManifestFromType is a type function which takes a parameterT.
@@ -239,12 +239,6 @@ export type ManifestBotUserSchema = {
   always_online?: boolean;
 };
 
-export interface ManifestFeaturesAppHome {
-  home_tab_enabled?: boolean;
-  messages_tab_enabled?: boolean;
-  messages_tab_read_only_enabled?: boolean;
-}
-
 // Utility type for the array types which requires minumum one subtype in it.
 export type PopulatedArray<T> = [T, ...T[]];
 export type ManifestShortcutSchema = {
@@ -279,7 +273,7 @@ export type ManifestWorkflowStepsSchema = PopulatedArray<ManifestWorkflowStep>;
 
 export interface ManifestFeaturesSchema {
   bot_user?: ManifestBotUserSchema;
-  app_home: ManifestFeaturesAppHome;
+  app_home: ManifestAppHomeSchema;
   shortcuts?: ManifestShortcutsSchema;
   slash_commands?: ManifestSlashCommandsSchema;
   unfurl_domains?: ManifestUnfurlDomainsSchema;

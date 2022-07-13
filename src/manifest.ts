@@ -59,77 +59,6 @@ export class SlackManifest {
       // otherwise it is remote hosted
       this.assignRemoteHostedManifestProperties(manifest);
     }
-    // if (def.slackHosted === false) {
-    //   //Settings
-
-    //   manifest.settings = def.settings ?? {};
-    //   // if (def.settings !== undefined) {
-    //   //   manifest.settings = def.settings;
-    //   // }
-    //   manifest.settings.function_runtime = this.getFunctionRuntime();
-    //   if (def.eventSubscriptions !== undefined) {
-    //     manifest.settings.event_subscriptions = def.eventSubscriptions;
-    //   }
-    //   if (def.socketModeEnabled !== undefined) {
-    //     manifest.settings.socket_mode_enabled = def.socketModeEnabled;
-    //   }
-    //   if (def.tokenRotationEnabled !== undefined) {
-    //     manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
-    //   }
-    //   /*
-    //       manifest.settings.function_runtime = this.getFunctionRuntime();
-    //       manifest.settings.event_subscriptions = def.eventSubscriptions;
-    //       manifest.settings.socket_mode_enabled = def.socketModeEnabled;
-    //       manifest.settings.token_rotation_enabled = def.tokenRotationEnabled; */
-
-    //   //AppDirectory
-
-    //   if (def.appDirectory !== undefined) {
-    //     manifest.app_directory = def.appDirectory;
-    //   }
-
-    //   //manifest.app_directory = def.appDirectory;
-
-    //   //OauthConfig
-
-    //   if (def.userScopes !== undefined) {
-    //     manifest.oauth_config.scopes.user = def.userScopes;
-    //   }
-    //   if (def.redirectUrls !== undefined) {
-    //     manifest.oauth_config.redirect_urls = def.redirectUrls;
-    //   }
-    //   if (def.tokenManagementEnabled !== undefined) {
-    //     manifest.oauth_config.token_management_enabled =
-    //       def.tokenManagementEnabled;
-    //   }
-    //   /*  manifest.oauth_config.scopes.user = def.userScopes;
-    //       manifest.oauth_config.redirect_urls = def.redirectUrls;
-    //       manifest.oauth_config.token_management_enabled =
-    //         def.tokenManagementEnabled;
-    //  */
-    //   //Features
-    //   // if (def.features?.appHome !== undefined) {
-    //   //   manifest.features.app_home = def.features?.appHome;
-    //   // }
-    //   if (def.features?.botUser?.always_online !== undefined) {
-    //     manifest.features.bot_user!.always_online =
-    //       def.features.botUser.always_online;
-    //   }
-    //   if (def.features?.shortcuts !== undefined) {
-    //     manifest.features.shortcuts = def.features?.shortcuts;
-    //   }
-    //   if (def.features?.slashCommands !== undefined) {
-    //     manifest.features.slash_commands = def.features?.slashCommands;
-    //   }
-    //   if (def.features?.unfurlDomains !== undefined) {
-    //     manifest.features.unfurl_domains = def.features?.unfurlDomains;
-    //   }
-    //   if (def.features?.workflowSteps !== undefined) {
-    //     manifest.features.workflow_steps = def.features?.workflowSteps;
-    //   }
-    // } else {
-    //   manifest.outgoing_domains = def.outgoingDomains || [];
-    // }
 
     if (def.functions) {
       manifest.functions = def.functions?.reduce<ManifestFunctionsSchema>(
@@ -171,16 +100,24 @@ export class SlackManifest {
       );
     }
 
+    // will override any existing apphome defaults if supplied
     if (def.features?.appHome) {
-      const { messagesTabEnabled, messagesTabReadOnlyEnabled } =
-        def.features.appHome;
+      const {
+        home_tab_enabled,
+        messages_tab_enabled,
+        messages_tab_read_only_enabled,
+      } = def.features.appHome;
 
-      if (messagesTabEnabled !== undefined) {
-        manifest.features.app_home.messages_tab_enabled = messagesTabEnabled;
+      if (home_tab_enabled !== undefined) {
+        manifest.features.app_home.home_tab_enabled = home_tab_enabled;
       }
-      if (messagesTabReadOnlyEnabled !== undefined) {
+
+      if (messages_tab_enabled !== undefined) {
+        manifest.features.app_home.messages_tab_enabled = messages_tab_enabled;
+      }
+      if (messages_tab_read_only_enabled !== undefined) {
         manifest.features.app_home.messages_tab_read_only_enabled =
-          messagesTabReadOnlyEnabled;
+          messages_tab_read_only_enabled;
       }
     }
     return manifest;
@@ -305,10 +242,7 @@ export class SlackManifest {
     manifest.oauth_config.token_management_enabled =
       def.tokenManagementEnabled;
     */
-    //Features
-    // if (def.features?.appHome !== undefined) {
-    //   manifest.features.app_home = def.features?.appHome;
-    // }
+    // Remote Features
     if (def.features?.botUser?.always_online !== undefined) {
       manifest.features.bot_user!.always_online =
         def.features.botUser.always_online;
