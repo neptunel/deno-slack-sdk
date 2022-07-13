@@ -193,6 +193,8 @@ export class SlackManifest {
   private getFunctionRuntime(): string {
     return this.definition.slackHosted === false ? "remote" : "slack";
   }
+
+  // TODO: Add description
   private assignRemoteHostedManifestProperties(manifest: ManifestSchema) {
     const def = this.definition as ISlackManifestRemote;
     //Settings

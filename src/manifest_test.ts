@@ -363,52 +363,6 @@ Deno.test("SlackManifest.export() will not duplicate datastore scopes if they're
   );
 });
 
-Deno.test("Manifest() property mappings for remote manifest", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: [],
-    features: {
-      botUser: { always_online: false },
-      shortcuts: [{
-        name: "test-shortcut",
-        type: "message",
-        callback_id: "callback_id",
-        description: "shortcut",
-      }],
-    },
-  };
-  const manifest = Manifest(definition);
-
-  assertEquals(manifest.display_information, {
-    name: definition.name,
-    background_color: definition.backgroundColor,
-    long_description: definition.longDescription,
-    description: definition.description,
-  });
-  assertStrictEquals(manifest.icon, definition.icon);
-  assertStrictEquals(
-    manifest.features.bot_user?.display_name,
-    definition.displayName,
-  );
-  assertStrictEquals(
-    manifest.features.bot_user?.always_online,
-    definition.features?.botUser?.always_online,
-  );
-  assertStrictEquals(
-    manifest.features.shortcuts,
-    definition.features?.shortcuts,
-  );
-  assertEquals(manifest.settings.function_runtime, "remote");
-});
-
 Deno.test("Manifest() property mappings for expanded types in the remote manifest", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
