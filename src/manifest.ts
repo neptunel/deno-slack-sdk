@@ -51,64 +51,84 @@ export class SlackManifest {
       settings: { "function_runtime": this.getFunctionRuntime() },
     } as ManifestSchema;
 
-    if (def.slackHosted === false) {
-      //Settings
-      if (def.settings === undefined) {
-        manifest.settings = {};
-      }
-      if (def.settings !== undefined) {
-        manifest.settings = def.settings;
-      }
-      manifest.settings.function_runtime = this.getFunctionRuntime();
-      if (def.eventSubscriptions !== undefined) {
-        manifest.settings.event_subscriptions = def.eventSubscriptions;
-      }
-      if (def.socketModeEnabled !== undefined) {
-        manifest.settings.socket_mode_enabled = def.socketModeEnabled;
-      }
-      if (def.tokenRotationEnabled !== undefined) {
-        manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
-      }
-
-      //AppDirectory
-      if (def.appDirectory !== undefined) {
-        manifest.app_directory = def.appDirectory;
-      }
-
-      //OauthConfig
-      if (def.userScopes !== undefined) {
-        manifest.oauth_config.scopes.user = def.userScopes;
-      }
-      if (def.redirectUrls !== undefined) {
-        manifest.oauth_config.redirect_urls = def.redirectUrls;
-      }
-      if (def.tokenManagementEnabled !== undefined) {
-        manifest.oauth_config.token_management_enabled =
-          def.tokenManagementEnabled;
-      }
-      //Features
-      if (def.features?.appHome !== undefined) {
-        manifest.features.app_home = def.features?.appHome;
-      }
-      if (def.features?.botUser?.always_online !== undefined) {
-        manifest.features.bot_user!.always_online =
-          def.features.botUser.always_online;
-      }
-      if (def.features?.shortcuts !== undefined) {
-        manifest.features.shortcuts = def.features?.shortcuts;
-      }
-      if (def.features?.slashCommands !== undefined) {
-        manifest.features.slash_commands = def.features?.slashCommands;
-      }
-      if (def.features?.unfurlDomains !== undefined) {
-        manifest.features.unfurl_domains = def.features?.unfurlDomains;
-      }
-      if (def.features?.workflowSteps !== undefined) {
-        manifest.features.workflow_steps = def.features?.workflowSteps;
-      }
-    } else {
+    // first we assume the app is Slack Hosted
+    if (def.slackHosted === true) {
       manifest.outgoing_domains = def.outgoingDomains || [];
+    } else if (def.slackHosted === false) {
+      // otherwise it is remote hosted
+      this.assignRemoteHostedManifestProperties(manifest);
     }
+    //     if (def.slackHosted === false) {
+    //       //Settings
+
+    //       manifest.settings = def.settings ?? {};
+    //       // if (def.settings !== undefined) {
+    //       //   manifest.settings = def.settings;
+    //       // }
+    //       manifest.settings.function_runtime = this.getFunctionRuntime();
+    //       if (def.eventSubscriptions !== undefined) {
+    //         manifest.settings.event_subscriptions = def.eventSubscriptions;
+    //       }
+    //       if (def.socketModeEnabled !== undefined) {
+    //         manifest.settings.socket_mode_enabled = def.socketModeEnabled;
+    //       }
+    //       if (def.tokenRotationEnabled !== undefined) {
+    //         manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
+    //       }
+    //       /*
+    //       manifest.settings.function_runtime = this.getFunctionRuntime();
+    //       manifest.settings.event_subscriptions = def.eventSubscriptions;
+    //       manifest.settings.socket_mode_enabled = def.socketModeEnabled;
+    //       manifest.settings.token_rotation_enabled = def.tokenRotationEnabled; */
+
+    //       //AppDirectory
+
+    //       if (def.appDirectory !== undefined) {
+    //         manifest.app_directory = def.appDirectory;
+    //       }
+
+    //       //manifest.app_directory = def.appDirectory;
+
+    //       //OauthConfig
+
+    //       if (def.userScopes !== undefined) {
+    //         manifest.oauth_config.scopes.user = def.userScopes;
+    //       }
+    //       if (def.redirectUrls !== undefined) {
+    //         manifest.oauth_config.redirect_urls = def.redirectUrls;
+    //       }
+    //       if (def.tokenManagementEnabled !== undefined) {
+    //         manifest.oauth_config.token_management_enabled =
+    //           def.tokenManagementEnabled;
+    //       }
+    //       /*  manifest.oauth_config.scopes.user = def.userScopes;
+    //       manifest.oauth_config.redirect_urls = def.redirectUrls;
+    //       manifest.oauth_config.token_management_enabled =
+    //         def.tokenManagementEnabled;
+    //  */
+    //       //Features
+    //       // if (def.features?.appHome !== undefined) {
+    //       //   manifest.features.app_home = def.features?.appHome;
+    //       // }
+    //       if (def.features?.botUser?.always_online !== undefined) {
+    //         manifest.features.bot_user!.always_online =
+    //           def.features.botUser.always_online;
+    //       }
+    //       if (def.features?.shortcuts !== undefined) {
+    //         manifest.features.shortcuts = def.features?.shortcuts;
+    //       }
+    //       if (def.features?.slashCommands !== undefined) {
+    //         manifest.features.slash_commands = def.features?.slashCommands;
+    //       }
+    //       if (def.features?.unfurlDomains !== undefined) {
+    //         manifest.features.unfurl_domains = def.features?.unfurlDomains;
+    //       }
+    //       if (def.features?.workflowSteps !== undefined) {
+    //         manifest.features.workflow_steps = def.features?.workflowSteps;
+    //       }
+    //     } else {
+    //       manifest.outgoing_domains = def.outgoingDomains || [];
+    //     }
 
     if (def.functions) {
       manifest.functions = def.functions?.reduce<ManifestFunctionsSchema>(
@@ -162,7 +182,6 @@ export class SlackManifest {
           messagesTabReadOnlyEnabled;
       }
     }
-
     return manifest;
   }
 
@@ -234,14 +253,76 @@ export class SlackManifest {
   // Maps the top level slackHosted boolean property to corresponding underlying ManifestSchema function_runtime property required by Slack API.
   // If no slackHosted property supplied, then functionRuntime defaults to "slack".
   private getFunctionRuntime(): string {
-    const slackHosted = this.definition.slackHosted;
-    let functionRuntime;
-    if (slackHosted === undefined || slackHosted) {
-      functionRuntime = "slack";
-    } else {
-      functionRuntime = "remote";
+    return this.definition.slackHosted === false ? "remote" : "slack";
+  }
+  private assignRemoteHostedManifestProperties(manifest: ManifestSchema) {
+    const def = this.definition;
+    //Settings
+
+    manifest.settings = def.settings ?? {};
+    // if (def.settings !== undefined) {
+    //   manifest.settings = def.settings;
+    // }
+    manifest.settings.function_runtime = this.getFunctionRuntime();
+    if (def.eventSubscriptions !== undefined) {
+      manifest.settings.event_subscriptions = def.eventSubscriptions;
+    }
+    if (def.socketModeEnabled !== undefined) {
+      manifest.settings.socket_mode_enabled = def.socketModeEnabled;
+    }
+    if (def.tokenRotationEnabled !== undefined) {
+      manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
+    }
+    /*
+    manifest.settings.function_runtime = this.getFunctionRuntime();
+    manifest.settings.event_subscriptions = def.eventSubscriptions;
+    manifest.settings.socket_mode_enabled = def.socketModeEnabled;
+    manifest.settings.token_rotation_enabled = def.tokenRotationEnabled; */
+
+    //AppDirectory
+
+    if (def.appDirectory !== undefined) {
+      manifest.app_directory = def.appDirectory;
     }
 
-    return functionRuntime;
+    //manifest.app_directory = def.appDirectory;
+
+    //OauthConfig
+
+    if (def.userScopes !== undefined) {
+      manifest.oauth_config.scopes.user = def.userScopes;
+    }
+    if (def.redirectUrls !== undefined) {
+      manifest.oauth_config.redirect_urls = def.redirectUrls;
+    }
+    if (def.tokenManagementEnabled !== undefined) {
+      manifest.oauth_config.token_management_enabled =
+        def.tokenManagementEnabled;
+    }
+    /*  manifest.oauth_config.scopes.user = def.userScopes;
+    manifest.oauth_config.redirect_urls = def.redirectUrls;
+    manifest.oauth_config.token_management_enabled =
+      def.tokenManagementEnabled;
+    */
+    //Features
+    // if (def.features?.appHome !== undefined) {
+    //   manifest.features.app_home = def.features?.appHome;
+    // }
+    if (def.features?.botUser?.always_online !== undefined) {
+      manifest.features.bot_user!.always_online =
+        def.features.botUser.always_online;
+    }
+    if (def.features?.shortcuts !== undefined) {
+      manifest.features.shortcuts = def.features?.shortcuts;
+    }
+    if (def.features?.slashCommands !== undefined) {
+      manifest.features.slash_commands = def.features?.slashCommands;
+    }
+    if (def.features?.unfurlDomains !== undefined) {
+      manifest.features.unfurl_domains = def.features?.unfurlDomains;
+    }
+    if (def.features?.workflowSteps !== undefined) {
+      manifest.features.workflow_steps = def.features?.workflowSteps;
+    }
   }
 }

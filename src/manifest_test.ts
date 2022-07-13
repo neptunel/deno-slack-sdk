@@ -530,9 +530,9 @@ Deno.test("Manifest() property mappings for remote manifest", () => {
 //     manifest.features.unfurl_domains,
 //     definition.features?.unfurlDomains,
 //   );
-//   assertStrictEquals(
-//     manifest.features.workflow_steps,
-//     definition.features?.workflowSteps,
+// assertStrictEquals(
+//   manifest.features.workflow_steps,
+//   definition.features?.workflowSteps,
 //   );
 //   // app directory
 //   assertStrictEquals(

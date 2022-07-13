@@ -92,7 +92,6 @@ export interface ISlackManifestRemote {
 
   features?: ISlackManifestRemoteFeaturesSchema;
 }
-
 export interface ISlackManifestRemoteFeaturesSchema {
   appHome?: ManifestAppHomeSchema;
   botUser?: Omit<ManifestBotUserSchema, "display_name">;
@@ -246,6 +245,8 @@ export interface ManifestFeaturesAppHome {
   messages_tab_read_only_enabled?: boolean;
 }
 
+// Utility type for the array types which requires minumum one subtype in it.
+export type PopulatedArray<T> = [T, ...T[]];
 export type ManifestShortcutSchema = {
   name: string;
   type: "message" | "global";
@@ -253,10 +254,7 @@ export type ManifestShortcutSchema = {
   description: string;
 };
 
-export type ManifestShortcutsSchema = [
-  ManifestShortcutSchema,
-  ...ManifestShortcutSchema[],
-];
+export type ManifestShortcutsSchema = PopulatedArray<ManifestShortcutSchema>;
 
 export type ManifestSlashCommandSchema = {
   command: string;
@@ -266,10 +264,9 @@ export type ManifestSlashCommandSchema = {
   should_escape?: boolean;
 };
 
-export type ManifestSlashCommandsSchema = [
-  ManifestSlashCommandSchema,
-  ...ManifestSlashCommandSchema[],
-];
+export type ManifestSlashCommandsSchema = PopulatedArray<
+  ManifestSlashCommandSchema
+>;
 
 export type ManifestUnfurlDomainsSchema = [string, ...string[]];
 
@@ -278,13 +275,10 @@ export type ManifestWorkflowStep = {
   callback_id: string;
 };
 
-export type ManifestWorkflowStepsSchema = [
-  ManifestWorkflowStep,
-  ...ManifestWorkflowStep[],
-];
+export type ManifestWorkflowStepsSchema = PopulatedArray<ManifestWorkflowStep>;
 
 export interface ManifestFeaturesSchema {
-  bot_user: ManifestBotUserSchema;
+  bot_user?: ManifestBotUserSchema;
   app_home: ManifestFeaturesAppHome;
   shortcuts?: ManifestShortcutsSchema;
   slash_commands?: ManifestSlashCommandsSchema;
