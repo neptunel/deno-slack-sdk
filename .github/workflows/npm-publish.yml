@@ -35,7 +35,7 @@ jobs:
           
       - name: Run build_npm.ts
         #run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
-        run: deno run -A build_npm.ts ${{env.TAG}}
+        run: deno run -A build_npm.ts ${{github.event.push.tag_name}}
          
       - name: Publish to NPM    
         run: cd npm && npm publish
