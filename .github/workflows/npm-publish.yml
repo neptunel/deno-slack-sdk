@@ -29,12 +29,13 @@ jobs:
         with:
           deno-version: v1.x
 
-           
+      - name: Get the tag name
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV     
           
           
       - name: Run build_npm.ts
         #run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
-        run: deno run -A build_npm.ts ${GITHUB_REF##*/}
+        run: deno run -A build_npm.ts ${{env.TAG}}
          
       - name: Publish to NPM    
         run: cd npm && npm publish
