@@ -4,9 +4,10 @@
 name: Build & Deploy to NPM
 
 on:
-  release:
-    types: [published]
-    branches: [ expand-manifest-types-fekiz ]
+  push:    
+    tags:        
+      - '*'
+    branches: [ main ]
 
 jobs:
 
@@ -27,9 +28,15 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+
+      - name: Extract tag name
+        shell: bash
+        run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF#refs/tags/})"
+        id: extract_tag      
+          
           
       - name: Run build_npm.ts
-        run: deno run -A build_npm.ts ${GITHUB_REF}
+        run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
          
       - name: Publish to NPM    
         run: cd npm && npm publish

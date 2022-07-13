@@ -102,6 +102,30 @@ export interface ISlackManifestRemoteFeaturesSchema {
   workflowSteps?: ManifestWorkflowStepsSchema;
 }
 
+// ISlackManifestHostedFeaturesSchema for Slack Hosted Apps
+
+export interface ISlackManifestHostedFeaturesSchema {
+  appHome?: SlackManifestFeaturesAppHome;
+}
+export type SlackManifestFeaturesAppHome = ManifestAppHomeSchema;
+
+export type ManifestAppHomeSchema = AppHomeMessagesTab & {
+  home_tab_enabled?: boolean;
+};
+
+// TODO: Find way to share these defaults
+type AppHomeMessagesTab = {
+  /** @default true */
+  messagesTabEnabled?: true;
+  /** @default true */
+  messagesTabReadOnlyEnabled?: boolean;
+} | {
+  /** @default true */
+  messagesTabEnabled: false;
+  /** @default true */
+  messagesTabReadOnlyEnabled: false;
+};
+
 /** SlackManifestFromType is a type function which takes a parameterT.
  * It looks at the SlackManifestType which is a discriminated union.
  * The function returns the type whose discriminant property (slackHosted) matches T
@@ -166,7 +190,6 @@ export type ManifestFunctionSchema = {
 
 export type ManifestCustomTypeSchema = ParameterDefinition;
 
-// TODO: Brand new type below
 export type ManifestFunctionsSchema = { [key: string]: ManifestFunctionSchema };
 
 export type ManifestDatastoreSchema = {
@@ -209,30 +232,6 @@ export type ManifestMetadataSchema = {
 };
 
 // Features
-
-// ISlackManifestHostedFeaturesSchema for Slack Hosted Apps
-
-export interface ISlackManifestHostedFeaturesSchema {
-  appHome?: SlackManifestFeaturesAppHome;
-}
-export type SlackManifestFeaturesAppHome = ManifestAppHomeSchema;
-
-export type ManifestAppHomeSchema = AppHomeMessagesTab & {
-  home_tab_enabled?: boolean;
-};
-
-// TODO: Find way to share these defaults
-type AppHomeMessagesTab = {
-  /** @default true */
-  messagesTabEnabled?: true;
-  /** @default true */
-  messagesTabReadOnlyEnabled?: boolean;
-} | {
-  /** @default true */
-  messagesTabEnabled: false;
-  /** @default true */
-  messagesTabReadOnlyEnabled: false;
-};
 
 //ManifestFeaturesSchema for Remote Hosted Apps(ISlackManifestRemote)
 

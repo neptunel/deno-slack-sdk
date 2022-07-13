@@ -51,7 +51,7 @@ export class SlackManifest {
       settings: { "function_runtime": this.getFunctionRuntime() },
     } as ManifestSchema;
 
-    if (def.slackHosted === false && def.slackHosted !== undefined) {
+    if (def.slackHosted === false) {
       //Settings
       if (def.settings === undefined) {
         manifest.settings = {};
@@ -231,7 +231,8 @@ export class SlackManifest {
     return includedScopes;
   }
 
-  // Maps the slackHosted to function_runtime
+  // Maps the top level slackHosted boolean property to corresponding underlying ManifestSchema function_runtime property required by Slack API.
+  // If no slackHosted property supplied, then functionRuntime defaults to "slack".
   private getFunctionRuntime(): string {
     const slackHosted = this.definition.slackHosted;
     let functionRuntime;
