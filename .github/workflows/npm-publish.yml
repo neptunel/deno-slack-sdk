@@ -11,7 +11,7 @@ name: Build & Deploy to NPM
 on:
   release:
     types: [published]
-  branches: [ expand-manifest-types-fekiz ]
+  
 
 
 jobs:
