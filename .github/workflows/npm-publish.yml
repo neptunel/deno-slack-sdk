@@ -29,14 +29,12 @@ jobs:
         with:
           deno-version: v1.x
 
-      - name: Extract tag name
-        shell: bash
-        run: echo "##[set-output name=tag;]$(echo ${GITHUB_REF#refs/tags/})"
-        id: extract_tag      
+           
           
           
       - name: Run build_npm.ts
-        run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
+        #run: deno run -A build_npm.ts ${{ steps.extract_tag.outputs.tag }}
+        run: deno run -A build_npm.ts ${GITHUB_REF##*/}
          
       - name: Publish to NPM    
         run: cd npm && npm publish
