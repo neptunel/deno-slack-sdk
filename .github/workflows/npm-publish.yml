@@ -7,7 +7,7 @@ on:
   push:    
     tags:        
       - '*'
-    branches: [ main ]
+    branches: [ expand-manifest-types-fekiz ]
 
 jobs:
 
