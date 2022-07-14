@@ -363,7 +363,7 @@ Deno.test("SlackManifest.export() will not duplicate datastore scopes if they're
   );
 });
 
-Deno.test("Manifest() properly maps display_information properties ", () => {
+Deno.test("Manifest() properly includes display_information properties ", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
     name: "fear and loathing in las vegas",
@@ -392,7 +392,7 @@ Deno.test("Manifest() properly maps display_information properties ", () => {
   );
 });
 
-Deno.test("Manifest: properly maps remote features properties", () => {
+Deno.test("Manifest: properly includes remote features properties", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
     name: "fear and loathing in las vegas",
@@ -466,7 +466,7 @@ Deno.test("Manifest: properly maps remote features properties", () => {
   );
 });
 
-Deno.test("Manifest: properly maps remote app_directory properties", () => {
+Deno.test("Manifest: properly includes remote app_directory properties", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
     name: "fear and loathing in las vegas",
@@ -497,7 +497,7 @@ Deno.test("Manifest: properly maps remote app_directory properties", () => {
     definition.appDirectory,
   );
 });
-Deno.test("Manifest: properly maps remote settings properties", () => {
+Deno.test("Manifest: properly includes remote settings properties", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
     name: "fear and loathing in las vegas",
@@ -555,7 +555,7 @@ Deno.test("Manifest: properly maps remote settings properties", () => {
   );
   assertStrictEquals(manifest.settings.function_runtime, "remote");
 });
-Deno.test("Manifest: properly maps remote oauth properties", () => {
+Deno.test("Manifest: properly includes remote oauth properties", () => {
   const definition: SlackManifestType = {
     slackHosted: false,
     name: "fear and loathing in las vegas",
