@@ -194,16 +194,15 @@ export class SlackManifest {
     return this.definition.slackHosted === false ? "remote" : "slack";
   }
 
-  // TODO: Add description
+  // Assigns the remote app types (types specific to ISlackManifestRemote) to corresponding manifest types.
   private assignRemoteHostedManifestProperties(manifest: ManifestSchema) {
     const def = this.definition as ISlackManifestRemote;
     //Settings
 
     manifest.settings = def.settings ?? {};
-    // if (def.settings !== undefined) {
-    //   manifest.settings = def.settings;
-    // }
+    // TODO: check if this is redundant?
     manifest.settings.function_runtime = this.getFunctionRuntime();
+
     if (def.eventSubscriptions !== undefined) {
       manifest.settings.event_subscriptions = def.eventSubscriptions;
     }
@@ -213,19 +212,12 @@ export class SlackManifest {
     if (def.tokenRotationEnabled !== undefined) {
       manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
     }
-    /*
-    manifest.settings.function_runtime = this.getFunctionRuntime();
-    manifest.settings.event_subscriptions = def.eventSubscriptions;
-    manifest.settings.socket_mode_enabled = def.socketModeEnabled;
-    manifest.settings.token_rotation_enabled = def.tokenRotationEnabled; */
 
     //AppDirectory
 
     if (def.appDirectory !== undefined) {
       manifest.app_directory = def.appDirectory;
     }
-
-    //manifest.app_directory = def.appDirectory;
 
     //OauthConfig
 
@@ -239,12 +231,9 @@ export class SlackManifest {
       manifest.oauth_config.token_management_enabled =
         def.tokenManagementEnabled;
     }
-    /*  manifest.oauth_config.scopes.user = def.userScopes;
-    manifest.oauth_config.redirect_urls = def.redirectUrls;
-    manifest.oauth_config.token_management_enabled =
-      def.tokenManagementEnabled;
-    */
+
     // Remote Features
+
     if (def.features?.botUser?.always_online !== undefined) {
       manifest.features.bot_user!.always_online =
         def.features.botUser.always_online;
