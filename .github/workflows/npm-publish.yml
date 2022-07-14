@@ -12,7 +12,7 @@ on:
 jobs:
 
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     
     steps:
       - name: Actions checkout
@@ -31,7 +31,7 @@ jobs:
 
       - name: Get the tag name
         #run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-        run: echo  ${{github.ref}} && echo ${{github.event.push}} 
+        run: echo  ${{github.ref}} && echo ${{github}} 
 
       - name: Run build_npm.ts
         run: deno run -A build_npm.ts 0.1.0
@@ -40,7 +40,7 @@ jobs:
       - name: Publish to NPM    
         run: cd npm && npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}                 `
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}                 
       
         
          

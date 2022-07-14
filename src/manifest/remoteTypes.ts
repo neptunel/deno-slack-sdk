@@ -1,4 +1,6 @@
-export interface ISlackManifestRemote {
+import { ISlackManifestShared, ManifestAppHomeSchema } from "./types.ts";
+// ISlackManifestRemote interface includes types only unique to remote apps
+export interface ISlackManifestRemote extends ISlackManifestShared {
   slackHosted: false; // maps to function_runtime = "remote" in ManifestSchema
 
   settings?: Omit<
@@ -30,22 +32,6 @@ export interface ISlackManifestRemoteFeaturesSchema {
   unfurlDomains?: ManifestUnfurlDomainsSchema;
   workflowSteps?: ManifestWorkflowStepsSchema;
 }
-export type ManifestAppHomeSchema = AppHomeMessagesTab & {
-  home_tab_enabled?: boolean;
-};
-
-// TODO: Find way to share these defaults
-type AppHomeMessagesTab = {
-  /** @default true */
-  messagesTabEnabled?: true;
-  /** @default true */
-  messagesTabReadOnlyEnabled?: boolean;
-} | {
-  /** @default true */
-  messagesTabEnabled: false;
-  /** @default true */
-  messagesTabReadOnlyEnabled: false;
-};
 
 // Features
 

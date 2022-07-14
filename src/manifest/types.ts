@@ -7,7 +7,14 @@ import type {
 } from "../parameters/mod.ts";
 import type { ICustomType } from "../types/types.ts";
 import type { ISlackManifestHosted } from "./hostedTypes.ts";
-import type { ISlackManifestRemote } from "./remoteTypes.ts";
+import type {
+  ISlackManifestRemote,
+  ManifestAppDirectorySchema,
+  ManifestFeaturesSchema,
+  ManifestOauthConfigSchema,
+  ManifestSettingsSchema,
+} from "./remoteTypes.ts";
+// import { ManifestDisplayInformationSchema } from "../types.ts";
 // import type { CamelCasedPropertiesDeep } from "./types_utils/camel-case.ts";
 
 export type {
@@ -21,6 +28,10 @@ export type {
  * defined in it. It does not map 1:1 to the ManifestSchema as it contains affordances
  * for better user experience.
  *
+ * Currently a developer has the ability to create their Slack apps in two broad categories.
+ * Apps hosted on Slack represented by ISlackManifestHosted interface.
+ * Apps hosted somewhere else represented by ISlackManifestRemote interface.
+ *
  * This type is a discriminated union where the discriminant property slackHosted
  * maps to function_runtime in the underlying ManifestSchema
  */
@@ -28,6 +39,8 @@ export type SlackManifestType =
   | ISlackManifestHosted
   | ISlackManifestRemote;
 
+// ISlackManifestShared represents the common types both ISlackManifestHosted and ISlackManifestRemote includes.
+// These two interfaces extends ISlackManifestShared with their own unique properties.
 export interface ISlackManifestShared {
   name: string;
   backgroundColor?: string;
@@ -106,6 +119,9 @@ export type ManifestFunctionSchema = {
 };
 
 export type ManifestCustomTypeSchema = ParameterDefinition;
+export type ManifestCustomTypesSchema = {
+  [key: string]: ManifestCustomTypeSchema;
+};
 
 export type ManifestFunctionsSchema = { [key: string]: ManifestFunctionSchema };
 
@@ -146,4 +162,44 @@ export type ManifestWorkflowsSchema = { [key: string]: ManifestWorkflowSchema };
 export type ManifestMetadataSchema = {
   major_version?: number;
   minor_version?: number;
+};
+
+export type ManifestAppHomeSchema = AppHomeMessagesTab & {
+  home_tab_enabled?: boolean;
+};
+
+// Display Information
+export type ManifestDisplayInformationSchema = {
+  name: string;
+  description?: string;
+  background_color?: string;
+  long_description?: string;
+};
+
+// TODO: Find way to share these defaults
+type AppHomeMessagesTab = {
+  /** @default true */
+  messages_tab_enabled?: true;
+  /** @default true */
+  messages_tab_read_only_enabled?: boolean;
+} | {
+  /** @default true */
+  messages_tab_enabled: false;
+  /** @default true */
+  messages_tab_read_only_enabled: false;
+};
+
+export type ManifestSchema = {
+  _metadata?: ManifestMetadataSchema;
+  settings: ManifestSettingsSchema;
+  app_directory?: ManifestAppDirectorySchema;
+  display_information: ManifestDisplayInformationSchema;
+  icon: string;
+  oauth_config: ManifestOauthConfigSchema;
+  features: ManifestFeaturesSchema;
+  functions?: ManifestFunctionsSchema;
+  workflows?: ManifestWorkflowsSchema;
+  outgoing_domains?: string[];
+  types?: ManifestCustomTypesSchema;
+  datastores?: ManifestDataStoresSchema;
 };

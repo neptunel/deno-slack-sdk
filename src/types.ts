@@ -104,9 +104,8 @@ export interface ISlackManifestRemoteFeaturesSchema {
 // ISlackManifestHostedFeaturesSchema for Slack Hosted Apps
 
 export interface ISlackManifestHostedFeaturesSchema {
-  appHome?: SlackManifestFeaturesAppHome;
+  appHome?: ManifestAppHomeSchema;
 }
-export type SlackManifestFeaturesAppHome = ManifestAppHomeSchema;
 
 export type ManifestAppHomeSchema = AppHomeMessagesTab & {
   home_tab_enabled?: boolean;
