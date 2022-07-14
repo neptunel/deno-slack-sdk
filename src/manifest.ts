@@ -203,34 +203,18 @@ export class SlackManifest {
     // TODO: check if this is redundant?
     manifest.settings.function_runtime = this.getFunctionRuntime();
 
-    if (def.eventSubscriptions !== undefined) {
-      manifest.settings.event_subscriptions = def.eventSubscriptions;
-    }
-    if (def.socketModeEnabled !== undefined) {
-      manifest.settings.socket_mode_enabled = def.socketModeEnabled;
-    }
-    if (def.tokenRotationEnabled !== undefined) {
-      manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
-    }
+    manifest.settings.event_subscriptions = def.eventSubscriptions;
+    manifest.settings.socket_mode_enabled = def.socketModeEnabled;
+    manifest.settings.token_rotation_enabled = def.tokenRotationEnabled;
 
     //AppDirectory
-
-    if (def.appDirectory !== undefined) {
-      manifest.app_directory = def.appDirectory;
-    }
+    manifest.app_directory = def.appDirectory;
 
     //OauthConfig
 
-    if (def.userScopes !== undefined) {
-      manifest.oauth_config.scopes.user = def.userScopes;
-    }
-    if (def.redirectUrls !== undefined) {
-      manifest.oauth_config.redirect_urls = def.redirectUrls;
-    }
-    if (def.tokenManagementEnabled !== undefined) {
-      manifest.oauth_config.token_management_enabled =
-        def.tokenManagementEnabled;
-    }
+    manifest.oauth_config.scopes.user = def.userScopes;
+    manifest.oauth_config.redirect_urls = def.redirectUrls;
+    manifest.oauth_config.token_management_enabled = def.tokenManagementEnabled;
 
     // Remote Features
 
