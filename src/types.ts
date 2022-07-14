@@ -179,7 +179,6 @@ export type ManifestFunctionParameters = {
   properties: ParameterSetDefinition;
 };
 export type ManifestFunctionSchema = {
-  //title and description is optional ->source file does not exists
   title?: string;
   description?: string;
   source_file: string;
