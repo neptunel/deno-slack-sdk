@@ -31,10 +31,11 @@ jobs:
 
       - name: Get the tag name
         #run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
-        run: echo  ${{github.refs}}  
+        run: echo  ${{github.ref}} && echo ${{github.event.push}} 
 
       - name: Run build_npm.ts
-        run: deno run -A build_npm.ts ${{github.event.release.tag_name}}
+        run: deno run -A build_npm.ts 0.1.0
+        #${{github.event.push.tag_name}}
          
       - name: Publish to NPM    
         run: cd npm && npm publish
