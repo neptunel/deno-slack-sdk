@@ -14,25 +14,20 @@ export type {
   SlackFunctionHandler,
 } from "./functions/types.ts";
 
-/** SlackManifestType describes the shape of the manifest definition provided by
- * the user. An app manifest of type ManifestSchema is generated based on what is
- * defined in it. It does not map 1:1 to the ManifestSchema as it contains affordances
- * for better user experience.
+/** User-facing manifest definition.
  *
- * This type is a discriminated union where the discriminant property slackHosted
- * maps to function_runtime in the underlying ManifestSchema
+ * SlackManifestType contains affordances for better user experience (e.g slackHosted property)
+ * The lower level ManifestSchema aligns with Slack API
+ *
+ * A discriminated union where the discriminant property slackHosted
+ * maps to function_runtime in the underlying ManifestSchema.
  */
 export type SlackManifestType =
   | ISlackManifestHosted
   | ISlackManifestRemote;
 
-/** ISlackManifestHosted contains the features currently available to
- * ManifestSchema#function_runtime = slack hosted apps. Here, we surface that value
- * to the developer as the slackHosted top-level property.
- */
-
-export interface ISlackManifestHosted {
-  slackHosted?: true; // maps to function_runtime = "slack" in ManifestSchema, optional since the apps are slack hosted by default
+/* Shared manifest properties */
+interface ISlackManifestShared {
   name: string;
   backgroundColor?: string;
   description: string;
@@ -45,33 +40,26 @@ export interface ISlackManifestHosted {
   outgoingDomains?: Array<string>;
   types?: ICustomType[];
   datastores?: ManifestDatastore[];
-  features?: ISlackManifestHostedFeaturesSchema;
 }
 
-/** ISlackManifestRemote contains the features currently available to
- * ManifestSchema.settings.function_runtime = remote apps. Here we surface that value
- * to the developer as the slackHosted property.
+/** Slack-hosted app manifest
  *
- * A subset of properties overlap with ISlackManifestRemote
+ * When slackHosted = true
+ * Corresponds to function_runtime = slack in ManifestSchema.
  */
-export interface ISlackManifestRemote {
+export interface ISlackManifestHosted extends ISlackManifestShared {
+  slackHosted?: true; // maps to function_runtime = "slack" in ManifestSchema, optional since the apps are slack hosted by default
+  outgoingDomains?: Array<string>;
+  features?: ISlackManifestHostedFeaturesSchema;
+}
+/** non-Slack hosted app manifest
+ *
+ * When slackHosted = false.
+ * Corresponds to function_runtime = slack in ManifestSchema.
+ */
+export interface ISlackManifestRemote extends ISlackManifestShared {
   slackHosted: false; // maps to function_runtime = "remote" in ManifestSchema
-  name: string;
-  backgroundColor?: string;
-  description: string;
-  displayName?: string;
-  icon: string;
-  longDescription?: string;
-  botScopes: Array<string>;
-  functions?: ManifestFunction[];
-  workflows?: ManifestWorkflow[];
 
-  // Outgoing domains are not enforced for remote functions
-  // outgoingDomains?: Array<string>;
-  types?: ICustomType[];
-  datastores?: ManifestDatastore[];
-
-  // Features supported in remote / non-run on Slack appss
   settings?: Omit<
     ManifestSettingsSchema,
     | "function_runtime"
@@ -82,26 +70,22 @@ export interface ISlackManifestRemote {
   eventSubscriptions?: ManifestEventSubscriptionsSchema;
   socketModeEnabled?: boolean;
   tokenRotationEnabled?: boolean;
-
   appDirectory?: ManifestAppDirectorySchema;
-
-  // oauth
   userScopes?: Array<string>;
   redirectUrls?: Array<string>;
   tokenManagementEnabled?: boolean;
-
   features?: ISlackManifestRemoteFeaturesSchema;
 }
+
+// Features
 export interface ISlackManifestRemoteFeaturesSchema {
   appHome?: ManifestAppHomeSchema;
   botUser?: Omit<ManifestBotUserSchema, "display_name">;
   shortcuts?: ManifestShortcutsSchema;
   slashCommands?: ManifestSlashCommandsSchema;
   unfurlDomains?: ManifestUnfurlDomainsSchema;
-  workflowSteps?: ManifestWorkflowStepsSchema;
+  workflowSteps?: ManifestWorkflowStepsSchemaLegacy;
 }
-
-// ISlackManifestHostedFeaturesSchema for Slack Hosted Apps
 
 export interface ISlackManifestHostedFeaturesSchema {
   appHome?: ManifestAppHomeSchema;
@@ -111,7 +95,6 @@ export type ManifestAppHomeSchema = AppHomeMessagesTab & {
   home_tab_enabled?: boolean;
 };
 
-// TODO: Find way to share these defaults
 type AppHomeMessagesTab = {
   /** @default true */
   messages_tab_enabled?: true;
@@ -123,15 +106,6 @@ type AppHomeMessagesTab = {
   /** @default true */
   messages_tab_read_only_enabled: false;
 };
-
-/** SlackManifestFromType is a type function which takes a parameterT.
- * It looks at the SlackManifestType which is a discriminated union.
- * The function returns the type whose discriminant property (slackHosted) matches T
- */
-export type SlackManifestFromType<T extends boolean> = Extract<
-  SlackManifestType,
-  { slackHosted: T }
->;
 
 export type ManifestDatastore = ISlackDatastore;
 
@@ -262,12 +236,16 @@ export type ManifestSlashCommandsSchema = PopulatedArray<
 
 export type ManifestUnfurlDomainsSchema = [string, ...string[]];
 
-export type ManifestWorkflowStep = {
+// Refers to the Workflow Step supported in platform 2.0 currently
+// This is distinct from the ManifestWorkflowStepSchema defined elsewhere
+export type ManifestWorkflowStepLegacy = {
   name: string;
   callback_id: string;
 };
 
-export type ManifestWorkflowStepsSchema = PopulatedArray<ManifestWorkflowStep>;
+export type ManifestWorkflowStepsSchemaLegacy = PopulatedArray<
+  ManifestWorkflowStepLegacy
+>;
 
 export interface ManifestFeaturesSchema {
   bot_user?: ManifestBotUserSchema;
@@ -275,7 +253,7 @@ export interface ManifestFeaturesSchema {
   shortcuts?: ManifestShortcutsSchema;
   slash_commands?: ManifestSlashCommandsSchema;
   unfurl_domains?: ManifestUnfurlDomainsSchema;
-  workflow_steps?: ManifestWorkflowStepsSchema;
+  workflow_steps?: ManifestWorkflowStepsSchemaLegacy;
 }
 
 // App Directory
@@ -365,3 +343,9 @@ export type ManifestSchema = {
   types?: ManifestCustomTypesSchema;
   datastores?: ManifestDataStoresSchema;
 };
+
+// Utility
+export type SlackManifestFromType<T extends boolean> = Extract<
+  SlackManifestType,
+  { slackHosted: T }
+>;

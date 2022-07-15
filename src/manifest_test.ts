@@ -232,6 +232,232 @@ Deno.test("Manifest() automatically registers types referenced by other types", 
   });
 });
 
+Deno.test("Manifest() correctly assigns display_information properties ", () => {
+  const definition: SlackManifestType = {
+    slackHosted: false,
+    name: "fear and loathing in las vegas",
+    description:
+      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
+    backgroundColor: "#FFF",
+    longDescription:
+      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
+    displayName: "fear and loathing",
+    icon: "icon.png",
+    botScopes: ["channels:history", "chat:write", "commands"],
+  };
+
+  const manifest = Manifest(definition);
+
+  assertEquals(manifest.display_information, {
+    name: definition.name,
+    background_color: definition.backgroundColor,
+    long_description: definition.longDescription,
+    description: definition.description,
+  });
+  assertStrictEquals(manifest.icon, definition.icon);
+  assertStrictEquals(
+    manifest.features.bot_user?.display_name,
+    definition.displayName,
+  );
+});
+
+Deno.test("Manifest() correctly assigns app_directory properties", () => {
+  const definition: SlackManifestType = {
+    slackHosted: false,
+    name: "fear and loathing in las vegas",
+    description:
+      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
+    backgroundColor: "#FFF",
+    longDescription:
+      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
+    displayName: "fear and loathing",
+    icon: "icon.png",
+    botScopes: ["channels:history", "chat:write", "commands"],
+    appDirectory: {
+      app_directory_categories: ["app-directory-test"],
+      use_direct_install: true,
+      direct_install_url: "https://api.slack.com/",
+      installation_landing_page: "https://api.slack.com/",
+      privacy_policy_url: "https://api.slack.com/",
+      support_url: "https://api.slack.com/",
+      support_email: "example@salesfroce.com",
+      supported_languages: ["eng", "fr"],
+      pricing: "free",
+    },
+  };
+  const manifest = Manifest(definition);
+  // app directory
+  assertStrictEquals(
+    manifest.app_directory,
+    definition.appDirectory,
+  );
+});
+
+Deno.test("Manifest() correctly assigns settings properties", () => {
+  const definition: SlackManifestType = {
+    slackHosted: false,
+    name: "fear and loathing in las vegas",
+    description:
+      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
+    backgroundColor: "#FFF",
+    longDescription:
+      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
+    displayName: "fear and loathing",
+    icon: "icon.png",
+    botScopes: ["channels:history", "chat:write", "commands"],
+    settings: {
+      "allowed_ip_address_ranges": ["123.89.34.56"],
+      "incoming_webhooks": true,
+      interactivity: {
+        is_enabled: true,
+        request_url: "https://app.slack.com/test",
+        message_menu_options_url: "https://app.slack.com",
+      },
+      "org_deploy_enabled": true,
+      "siws_links": { initiate_uri: "https://app.slack.com" },
+    },
+    eventSubscriptions: {
+      request_url: "string",
+      user_events: ["app_home_opened"],
+      bot_events: ["app_home_opened"],
+      metadata_subscriptions: [
+        {
+          app_id: "metadata-test",
+          event_type: "customer_created",
+        },
+      ],
+    },
+
+    socketModeEnabled: true,
+    tokenRotationEnabled: false,
+  };
+  const manifest = Manifest(definition);
+  //settings
+  assertStrictEquals(
+    manifest.settings,
+    definition.settings,
+  );
+  assertStrictEquals(
+    manifest.settings.socket_mode_enabled,
+    definition.socketModeEnabled,
+  );
+  assertStrictEquals(
+    manifest.settings.token_rotation_enabled,
+    definition.tokenRotationEnabled,
+  );
+  assertStrictEquals(
+    manifest.settings.event_subscriptions,
+    definition.eventSubscriptions,
+  );
+  assertStrictEquals(manifest.settings.function_runtime, "remote");
+});
+
+Deno.test("Manifest() correctly assigns oauth properties", () => {
+  const definition: SlackManifestType = {
+    slackHosted: false,
+    name: "fear and loathing in las vegas",
+    description:
+      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
+    backgroundColor: "#FFF",
+    longDescription:
+      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
+    displayName: "fear and loathing",
+    icon: "icon.png",
+    botScopes: ["channels:history", "chat:write", "commands"],
+    userScopes: ["admin", "calls:read"],
+    redirectUrls: ["https://api.slack.com/", "https://app.slack.com/"],
+    tokenManagementEnabled: false,
+  };
+  const manifest = Manifest(definition);
+  //oauth
+  assertStrictEquals(
+    manifest.oauth_config.scopes.user,
+    definition.userScopes,
+  );
+  assertStrictEquals(
+    manifest.oauth_config.redirect_urls,
+    definition.redirectUrls,
+  );
+  assertStrictEquals(
+    manifest.oauth_config.token_management_enabled,
+    definition.tokenManagementEnabled,
+  );
+});
+
+Deno.test("Manifest() correctly assigns other app features", () => {
+  const definition: SlackManifestType = {
+    slackHosted: false,
+    name: "fear and loathing in las vegas",
+    description:
+      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
+    backgroundColor: "#FFF",
+    longDescription:
+      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
+    displayName: "fear and loathing",
+    icon: "icon.png",
+    botScopes: ["channels:history", "chat:write", "commands"],
+    features: {
+      botUser: { always_online: false },
+      shortcuts: [{
+        name: "test-shortcut",
+        type: "message",
+        callback_id: "callback_id",
+        description: "shortcut",
+      }],
+      appHome: {
+        home_tab_enabled: true,
+        messages_tab_enabled: false,
+        messages_tab_read_only_enabled: false,
+      },
+      slashCommands: [{
+        command: "sample-command",
+        url: "https://app.slack.com",
+        description: "test command",
+        usage_hint: "testing",
+        should_escape: true,
+      }, {
+        command: "sample-command2",
+        url: "https://app.slack.com",
+        description: "test command 2",
+        usage_hint: "testing 2",
+        should_escape: true,
+      }],
+      unfurlDomains: ["https://app.slack.com"],
+      workflowSteps: [{
+        name: "workflow step test",
+        callback_id: "workflow-step-test",
+      }],
+    },
+  };
+  const manifest = Manifest(definition);
+
+  //features
+  assertStrictEquals(
+    manifest.features.bot_user?.always_online,
+    definition.features?.botUser?.always_online,
+  );
+  assertStrictEquals(
+    manifest.features.shortcuts,
+    definition.features?.shortcuts,
+  );
+  assertStrictEquals(
+    manifest.features.slash_commands,
+    definition.features?.slashCommands,
+  );
+  assertEquals(
+    manifest.features.app_home,
+    definition.features?.appHome,
+  );
+  assertStrictEquals(
+    manifest.features.unfurl_domains,
+    definition.features?.unfurlDomains,
+  );
+  assertStrictEquals(
+    manifest.features.workflow_steps,
+    definition.features?.workflowSteps,
+  );
+});
+
 Deno.test("SlackManifest() registration functions don't allow duplicates", () => {
   const functionId = "test_function";
   const arrayTypeId = "test_array_type";
@@ -362,231 +588,6 @@ Deno.test("SlackManifest.export() will not duplicate datastore scopes if they're
     1,
   );
 });
-
-Deno.test("Manifest() properly includes display_information properties ", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: ["channels:history", "chat:write", "commands"],
-  };
-
-  const manifest = Manifest(definition);
-
-  assertEquals(manifest.display_information, {
-    name: definition.name,
-    background_color: definition.backgroundColor,
-    long_description: definition.longDescription,
-    description: definition.description,
-  });
-  assertStrictEquals(manifest.icon, definition.icon);
-  assertStrictEquals(
-    manifest.features.bot_user?.display_name,
-    definition.displayName,
-  );
-});
-
-Deno.test("Manifest: properly includes remote features properties", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: ["channels:history", "chat:write", "commands"],
-    features: {
-      botUser: { always_online: false },
-      shortcuts: [{
-        name: "test-shortcut",
-        type: "message",
-        callback_id: "callback_id",
-        description: "shortcut",
-      }],
-      appHome: {
-        home_tab_enabled: true,
-        messages_tab_enabled: false,
-        messages_tab_read_only_enabled: false,
-      },
-      slashCommands: [{
-        command: "sample-command",
-        url: "https://app.slack.com",
-        description: "test command",
-        usage_hint: "testing",
-        should_escape: true,
-      }, {
-        command: "sample-command2",
-        url: "https://app.slack.com",
-        description: "test command 2",
-        usage_hint: "testing 2",
-        should_escape: true,
-      }],
-      unfurlDomains: ["https://app.slack.com"],
-      workflowSteps: [{
-        name: "workflow step test",
-        callback_id: "workflow-step-test",
-      }],
-    },
-  };
-  const manifest = Manifest(definition);
-
-  //features
-  assertStrictEquals(
-    manifest.features.bot_user?.always_online,
-    definition.features?.botUser?.always_online,
-  );
-  assertStrictEquals(
-    manifest.features.shortcuts,
-    definition.features?.shortcuts,
-  );
-  assertStrictEquals(
-    manifest.features.slash_commands,
-    definition.features?.slashCommands,
-  );
-  assertEquals(
-    manifest.features.app_home,
-    definition.features?.appHome,
-  );
-  assertStrictEquals(
-    manifest.features.unfurl_domains,
-    definition.features?.unfurlDomains,
-  );
-  assertStrictEquals(
-    manifest.features.workflow_steps,
-    definition.features?.workflowSteps,
-  );
-});
-
-Deno.test("Manifest: properly includes remote app_directory properties", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: ["channels:history", "chat:write", "commands"],
-    appDirectory: {
-      app_directory_categories: ["app-directory-test"],
-      use_direct_install: true,
-      direct_install_url: "https://api.slack.com/",
-      installation_landing_page: "https://api.slack.com/",
-      privacy_policy_url: "https://api.slack.com/",
-      support_url: "https://api.slack.com/",
-      support_email: "example@salesfroce.com",
-      supported_languages: ["eng", "fr"],
-      pricing: "free",
-    },
-  };
-  const manifest = Manifest(definition);
-  // app directory
-  assertStrictEquals(
-    manifest.app_directory,
-    definition.appDirectory,
-  );
-});
-Deno.test("Manifest: properly includes remote settings properties", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: ["channels:history", "chat:write", "commands"],
-    settings: {
-      "allowed_ip_address_ranges": ["123.89.34.56"],
-      "incoming_webhooks": true,
-      interactivity: {
-        is_enabled: true,
-        request_url: "https://app.slack.com/test",
-        message_menu_options_url: "https://app.slack.com",
-      },
-      "org_deploy_enabled": true,
-      "siws_links": { initiate_uri: "https://app.slack.com" },
-    },
-    eventSubscriptions: {
-      request_url: "string",
-      user_events: ["app_home_opened"],
-      bot_events: ["app_home_opened"],
-      metadata_subscriptions: [
-        {
-          app_id: "metadata-test",
-          event_type: "customer_created",
-        },
-      ],
-    },
-
-    socketModeEnabled: true,
-    tokenRotationEnabled: false,
-  };
-  const manifest = Manifest(definition);
-  //settings
-  assertStrictEquals(
-    manifest.settings,
-    definition.settings,
-  );
-  assertStrictEquals(
-    manifest.settings.socket_mode_enabled,
-    definition.socketModeEnabled,
-  );
-  assertStrictEquals(
-    manifest.settings.token_rotation_enabled,
-    definition.tokenRotationEnabled,
-  );
-  assertStrictEquals(
-    manifest.settings.event_subscriptions,
-    definition.eventSubscriptions,
-  );
-  assertStrictEquals(manifest.settings.function_runtime, "remote");
-});
-Deno.test("Manifest: properly includes remote oauth properties", () => {
-  const definition: SlackManifestType = {
-    slackHosted: false,
-    name: "fear and loathing in las vegas",
-    description:
-      "fear and loathing in las vegas: a savage journey to the heart of the american dream",
-    backgroundColor: "#FFF",
-    longDescription:
-      "The book is a roman à clef, rooted in autobiographical incidents. The story follows its protagonist, Raoul Duke, and his attorney, Dr. Gonzo, as they descend on Las Vegas to chase the American Dream...",
-    displayName: "fear and loathing",
-    icon: "icon.png",
-    botScopes: ["channels:history", "chat:write", "commands"],
-    userScopes: ["admin", "calls:read"],
-    redirectUrls: ["https://api.slack.com/", "https://app.slack.com/"],
-    tokenManagementEnabled: false,
-  };
-  const manifest = Manifest(definition);
-  //oauth
-  assertStrictEquals(
-    manifest.oauth_config.scopes.user,
-    definition.userScopes,
-  );
-  assertStrictEquals(
-    manifest.oauth_config.redirect_urls,
-    definition.redirectUrls,
-  );
-  assertStrictEquals(
-    manifest.oauth_config.token_management_enabled,
-    definition.tokenManagementEnabled,
-  );
-});
-
 Deno.test("SlackManifest.export() defaults to enabling the read only messages tab", () => {
   const definition: SlackManifestType = {
     name: "Name",
