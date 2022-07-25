@@ -12,9 +12,9 @@ import {
   ManifestWorkflow,
   ManifestWorkflowStepsSchemaLegacy,
 } from "./manifest_schema.ts";
-
 import { OAuth2Provider } from "../providers/oauth2/mod.ts";
 import { ICustomType } from "../types/types.ts";
+import { CamelCasedPropertiesDeep } from "./types_util.ts";
 
 /** Manifest definition.
  *
@@ -35,7 +35,6 @@ export type SlackManifestType =
  */
 export interface ISlackManifestRunOnSlack extends ISlackManifestShared {
   runOnSlack?: true; // maps to function_runtime = "slack" in ManifestSchema, optional since the apps are slack hosted by default
-  outgoingDomains?: Array<string>;
   features?: ISlackManifestRunOnSlackFeaturesSchema;
   externalAuthProviders?: (OAuth2Provider /*|OAuth1Provider*/)[];
 }
@@ -82,11 +81,10 @@ interface ISlackManifestShared {
 }
 
 interface ISlackManifestRunOnSlackFeaturesSchema {
-  appHome?: ManifestAppHomeSchema;
+  appHome?: CamelCasedPropertiesDeep<ManifestAppHomeSchema>;
 }
-
 interface ISlackManifestRemoteFeaturesSchema {
-  appHome?: ManifestAppHomeSchema;
+  appHome?: CamelCasedPropertiesDeep<ManifestAppHomeSchema>;
   botUser?: Omit<ManifestBotUserSchema, "display_name">;
   shortcuts?: ManifestShortcutsSchema;
   slashCommands?: ManifestSlashCommandsSchema;

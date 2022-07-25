@@ -405,16 +405,10 @@ Deno.test("Manifest() correctly assigns settings properties", () => {
         },
       ],
     },
-
     socketModeEnabled: true,
     tokenRotationEnabled: false,
   };
   const manifest = Manifest(definition);
-  //settings
-  assertStrictEquals(
-    manifest.settings,
-    definition.settings,
-  );
   assertStrictEquals(
     manifest.settings.socket_mode_enabled,
     definition.socketModeEnabled,
@@ -426,6 +420,22 @@ Deno.test("Manifest() correctly assigns settings properties", () => {
   assertStrictEquals(
     manifest.settings.event_subscriptions,
     definition.eventSubscriptions,
+  );
+  assertStrictEquals(
+    manifest.settings.allowed_ip_address_ranges,
+    definition.settings?.allowed_ip_address_ranges,
+  );
+  assertStrictEquals(
+    manifest.settings.incoming_webhooks,
+    definition.settings?.incoming_webhooks,
+  );
+  assertStrictEquals(
+    manifest.settings.org_deploy_enabled,
+    definition.settings?.org_deploy_enabled,
+  );
+  assertStrictEquals(
+    manifest.settings.siws_links,
+    definition.settings?.siws_links,
   );
   assertStrictEquals(manifest.settings.function_runtime, "remote");
 });
@@ -483,9 +493,9 @@ Deno.test("Manifest() correctly assigns other app features", () => {
         description: "shortcut",
       }],
       appHome: {
-        home_tab_enabled: true,
-        messages_tab_enabled: false,
-        messages_tab_read_only_enabled: false,
+        homeTabEnabled: true,
+        messagesTabEnabled: false,
+        messagesTabReadOnlyEnabled: false,
       },
       slashCommands: [{
         command: "sample-command",
@@ -523,8 +533,16 @@ Deno.test("Manifest() correctly assigns other app features", () => {
     definition.features?.slashCommands,
   );
   assertEquals(
-    manifest.features.app_home,
-    definition.features?.appHome,
+    manifest.features.app_home?.home_tab_enabled,
+    true,
+  );
+  assertEquals(
+    manifest.features.app_home?.messages_tab_enabled,
+    false,
+  );
+  assertEquals(
+    manifest.features.app_home?.messages_tab_read_only_enabled,
+    false,
   );
   assertStrictEquals(
     manifest.features.unfurl_domains,
@@ -697,8 +715,8 @@ Deno.test("SlackManifest.export() allows overriding app home features", () => {
     botScopes: [],
     features: {
       appHome: {
-        messages_tab_enabled: false,
-        messages_tab_read_only_enabled: false,
+        messagesTabEnabled: false,
+        messagesTabReadOnlyEnabled: false,
       },
     },
   };
